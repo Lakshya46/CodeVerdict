@@ -1,10 +1,10 @@
 "use server";
 import {
-    fetchUserContribution, getGithubToken
+    fetchUserContribution, getGithubAccessToken
 } from "@/modules/github/lib/github"
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { Octokit } from "octokit";
+import { Octokit } from "@octokit/rest";
 import prisma from "@/lib/db";
 
 
@@ -18,7 +18,7 @@ export async function getContributionStats() {
             throw new Error("Unauthorized");
         }
 
-        const token = await getGithubToken();
+        const token = await getGithubAccessToken();
 
         // Get the actual GitHub username from the GitHub API
         const octokit = new Octokit({ auth: token });
@@ -62,7 +62,7 @@ export async function getDashboardStats() {
             throw new Error("Unauthorized");
         }
 
-        const token = await getGithubToken();
+        const token = await getGithubAccessToken();
         const octokit = new Octokit({ auth: token })
 
         // Get users github username
@@ -114,7 +114,7 @@ export async function getMonthlyActivity() {
         if (!session?.user) {
             throw new Error("Unauthorized");
         }
-        const token = await getGithubToken();
+        const token = await getGithubAccessToken();
         const octokit = new Octokit({ auth: token })
 
         const { data: user } = await octokit.rest.users.getAuthenticated()

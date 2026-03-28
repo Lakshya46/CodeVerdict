@@ -29,10 +29,17 @@ model User {
   sessions      Session[]
   accounts      Account[]
   repositories Repository[]
+  usage UserUsage?
+  subscriptionsTier String @default("free") // free, pro, enterprise
+  subscriptionsStatus String ? // active, past_due, canceled, unpaid
 
+polarCustomerId    String?   @unique
+polarSubscriptionId String?  @unique
+  
   @@unique([email])
   @@map("user")
 }
+
 
 model Repository{
   id String @id @default(cuid())
@@ -43,12 +50,43 @@ model Repository{
   url String
   userId String
   user User @relation( fields: [userId] , references: [id], onDelete: Cascade)
-
+  reviews Review[]
   createdAt DateTime @default(now())
-  updatedAt DateTime@updatedAt
+  updatedAt DateTime @updatedAt
   @@index([userId])
   @@map("repository")
 
+}
+
+model Review {
+  id String @id @default(cuid())
+  repositoryId String
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  prNumber Int
+  prTitle String
+  prUrl String
+
+  review String  @db.Text
+  status String @default("pending") // pending, completed, failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([repositoryId])
+ 
+  @@map("review")
+} 
+
+
+model UserUsage {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositoryCount Int @default(0)
+  reviewCount Json @default("{}") // { "2023-09-01": 3, "2023-09-02": 5 })
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_usage")
 }
 
 model Session {

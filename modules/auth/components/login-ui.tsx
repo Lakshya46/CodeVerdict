@@ -1,7 +1,8 @@
 "use client";
 
+
 import { signIn } from "@/lib/auth-client";
-import { GithubIcon } from "lucide-react";
+import { Code } from "lucide-react";
 import { useState } from "react";
 
 const LoginUI = () => {
@@ -64,7 +65,7 @@ const LoginUI = () => {
 						disabled={isLoading}
 						className="w-full py-3 px-4 bg-primary text-black rounded-lg font-semibold hover:bg-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-3 mb-8"
 					>
-						<GithubIcon size={20} />
+						<Code size={20} />
 						{isLoading ? "Signing in..." : "GitHub"}
 					</button>
 
