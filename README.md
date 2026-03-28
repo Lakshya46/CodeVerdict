@@ -4,7 +4,7 @@
 ---
 
 ## 🚀 Live Demo  
-👉 *Add your deployed link here*
+https://codeverdict-r1ac.onrender.com/dashboard
 
 ---
 
