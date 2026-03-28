@@ -1,4 +1,4 @@
-import { Octokit } from "octokit";
+import { Octokit } from "@octokit/rest";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
