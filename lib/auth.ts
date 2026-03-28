@@ -46,9 +46,7 @@ export const auth = betterAuth({
     sameSite: "none",
     domain: ".onrender.com", 
   },
-  redirects: {
-  afterLogin: "/dashboard",
-},
+  
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
