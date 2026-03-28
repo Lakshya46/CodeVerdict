@@ -47,7 +47,7 @@ export const auth = betterAuth({
 	},
 	trustedOrigins: [
 	
-        //  process.env.NEXT_PUBLIC_APP_BASE_URL! ,
+         process.env.NEXT_PUBLIC_APP_BASE_URL! ,
 		"https://hauriant-lynwood-seditiously.ngrok-free.dev",
 	],
 	plugins: [
