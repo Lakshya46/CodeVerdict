@@ -44,8 +44,11 @@ export const auth = betterAuth({
   cookies: {
     secure: true,
     sameSite: "none",
-    domain: ".onrender.com", // 🔥 CRITICAL FIX
+    domain: ".onrender.com", 
   },
+  redirects: {
+  afterLogin: "/dashboard",
+},
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
