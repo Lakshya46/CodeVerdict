@@ -35,130 +35,110 @@ if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
 
 
 export const auth = betterAuth({
-	database: prismaAdapter(prisma, {
-		provider: "postgresql",
-	}),
-	socialProviders: {
-		github: {
-			clientId: process.env.GITHUB_CLIENT_ID,
-			clientSecret: process.env.GITHUB_CLIENT_SECRET,
-			scope: ["repo"],
-		},
-	},
-	trustedOrigins: [
-	
-         process.env.NEXT_PUBLIC_APP_BASE_URL! ,
-		"https://hauriant-lynwood-seditiously.ngrok-free.dev",
-	],
-	plugins: [
-		polar({
-			client: polarClient,
-			createCustomerOnSignUp: true,
-			use: [
-				checkout({
-					products: [
-						{
-							productId: "9d8fa7aa-0cf4-4668-804e-25145aad5d7f",
-                            slug: "codeverdict" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
-						},
-					],
-					successUrl:
-						process.env.POLAR_SUCCESS_URL ||
-						"/dashboard/subscriptions?success=true",
-					authenticatedUsersOnly: true,
-				}),
-				portal({
-					returnUrl:
-						process.env.NEXT_PUBLIC_APP_URL ||
-						"http://localhost:3000/dashboard",
-				}),
-				usage(),
-				webhooks({
-					secret: process.env.POLAR_WEBHOOK_SECRET!,
-					/**
-					 * Handles the 'subscription.active' event from Polar.
-					 * Updates the user's tier to PRO and status to ACTIVE.
-					 */
-					onSubscriptionActive: async (payload : any) => {
-						const customerId = payload.data.customerId;
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
 
-						const user = await prisma.user.findUnique({
-							where: {
-								polarCustomerId: customerId,
-							},
-						});
+  trustedOrigins: [
+    process.env.NEXT_PUBLIC_APP_URL!,
+  ],
 
-						if (user) {
-							await updateUserTier(
-								user.id,
-								"PRO",
-								"ACTIVE",
-								payload.data.id
-							);
-						}
-					},
-					/**
-					 * Handles the 'subscription.canceled' event from Polar.
-					 * Updates the user's status to CANCELLED.
-					 * Note: The tier might remain valid until the end of the billing period,
-					 * but here we just mark the status.
-					 */
-					onSubscriptionCanceled: async (payload : any) => {
-						const customerId = payload.data.customerId;
+  cookies: {
+    secure: true,
+    sameSite: "none",
+    domain: ".onrender.com", // 🔥 CRITICAL FIX
+  },
 
-						const user = await prisma.user.findUnique({
-							where: {
-								polarCustomerId: customerId,
-							},
-						});
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
 
-						if (user) {
-							await updateUserTier(
-								user.id,
-								user.subscriptionsStatus as SubscriptionTier,
-								"CANCELLED"
-							);
-						}
-					},
-					/**
-					 * Handles the 'subscription.revoked' event from Polar.
-					 * Downgrades the user to FREE and updates status to EXPIRED.
-					 */
-					onSubscriptionRevoked: async (payload : any) => {
-						const customerId = payload.data.customerId;
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      scope: ["repo"],
+    },
+  },
 
-						const user = await prisma.user.findUnique({
-							where: {
-								polarCustomerId: customerId,
-							},
-						});
+  plugins: [
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: [
+            {
+              productId: "9d8fa7aa-0cf4-4668-804e-25145aad5d7f",
+              slug: "codeverdict",
+            },
+          ],
+          successUrl:
+            process.env.POLAR_SUCCESS_URL ||
+            "/dashboard/subscriptions?success=true",
+          authenticatedUsersOnly: true,
+        }),
+        portal({
+          returnUrl:
+            process.env.NEXT_PUBLIC_APP_URL ||
+            "http://localhost:3000/dashboard",
+        }),
+        usage(),
+        webhooks({
+          secret: process.env.POLAR_WEBHOOK_SECRET!,
+          onSubscriptionActive: async (payload: any) => {
+            const customerId = payload.data.customerId;
 
-						if (user) {
-							await updateUserTier(user.id, "FREE", "EXPIRED");
-						}
-					},
-					onOrderPaid: async () => {},
-					/**
-					 * Handles the 'customer.created' event.
-					 * Links the local user record with the Polar customer ID.
-					 */
-					onCustomerCreated: async (payload : any) => {
-						const user = await prisma.user.findUnique({
-							where: {
-								email: payload.data.email,
-							},
-						});
+            const user = await prisma.user.findUnique({
+              where: { polarCustomerId: customerId },
+            });
 
-						if (user) {
-							await updatePolarCustomerId(
-								user.id,
-								payload.data.id
-							);
-						}
-					},
-				}),
-			],
-		}),
-	],
+            if (user) {
+              await updateUserTier(
+                user.id,
+                "PRO",
+                "ACTIVE",
+                payload.data.id
+              );
+            }
+          },
+          onSubscriptionCanceled: async (payload: any) => {
+            const customerId = payload.data.customerId;
+
+            const user = await prisma.user.findUnique({
+              where: { polarCustomerId: customerId },
+            });
+
+            if (user) {
+              await updateUserTier(
+                user.id,
+                user.subscriptionsStatus as SubscriptionTier,
+                "CANCELLED"
+              );
+            }
+          },
+          onSubscriptionRevoked: async (payload: any) => {
+            const customerId = payload.data.customerId;
+
+            const user = await prisma.user.findUnique({
+              where: { polarCustomerId: customerId },
+            });
+
+            if (user) {
+              await updateUserTier(user.id, "FREE", "EXPIRED");
+            }
+          },
+          onOrderPaid: async () => {},
+          onCustomerCreated: async (payload: any) => {
+            const user = await prisma.user.findUnique({
+              where: { email: payload.data.email },
+            });
+
+            if (user) {
+              await updatePolarCustomerId(user.id, payload.data.id);
+            }
+          },
+        }),
+      ],
+    }),
+  ],
 });
 
