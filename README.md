@@ -1,36 +1,172 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚖️ Code Verdict  
+**AI-Powered Code Review Assistant**
 
-## Getting Started
+---
 
-First, run the development server:
+## 🚀 Live Demo  
+👉 *Add your deployed link here*
+
+---
+
+## 📌 Overview  
+
+**Code Verdict** is an intelligent, AI-powered code review platform designed to automate and enhance the pull request review process. It integrates seamlessly with GitHub repositories to analyze code changes, provide contextual feedback, and help developers maintain high-quality code standards efficiently.
+
+By leveraging advanced LLMs and Retrieval-Augmented Generation (RAG), Code Verdict understands not just code differences but the entire codebase context.
+
+---
+
+## ✨ Key Features  
+
+- 🤖 **AI-Powered Code Reviews**  
+  Uses advanced LLMs (via Vercel AI SDK) to generate meaningful and actionable feedback on pull requests.
+
+- 🧠 **Context-Aware Analysis (RAG)**  
+  Integrates Pinecone with RAG to understand full repository context instead of isolated diffs.
+
+- 🔗 **GitHub Integration**  
+  Connect repositories and automatically track pull requests.
+
+- 📊 **Interactive Dashboard**  
+  Visualize repository activity, review history, and insights.
+
+- 💳 **Subscription Management**  
+  Integrated with Polar.sh for billing, plans, and usage limits.
+
+- ⚡ **Real-time Processing**  
+  Uses Inngest for background jobs and event-driven workflows.
+
+---
+
+## 🛠️ Tech Stack  
+
+| Category            | Technology |
+|--------------------|-----------|
+| **Framework**       | Next.js 16 (App Router) |
+| **Language**        | TypeScript |
+| **Styling**         | Tailwind CSS v4 |
+| **UI Components**   | Shadcn UI, Radix UI, Lucide React |
+| **Database**        | PostgreSQL (Prisma ORM) |
+| **Authentication**  | Better Auth |
+| **AI & Vector DB**  | Vercel AI SDK, Pinecone |
+| **Background Jobs** | Inngest |
+| **Payments**        | Polar.sh |
+| **State Management**| TanStack Query |
+
+---
+
+## 📸 Screenshots  
+
+> Add your screenshots here  
+
+- Dashboard  
+- Repositories  
+- Reviews  
+- Settings  
+- Subscriptions  
+
+---
+
+## 🏁 Getting Started  
+
+### ✅ Prerequisites  
+
+- Node.js (v18+)  
+- npm / pnpm / bun  
+- PostgreSQL  
+- GitHub OAuth App  
+- Pinecone API Key  
+- Google Gemini API Key  
+
+---
+
+### ⚙️ Installation 
+npm install
+# or
+pnpm install
+# or
+bun install
+
+#### 1️⃣ Clone the Repository  
 
 ```bash
+git clone https://github.com/your-username/code-verdict.git
+cd code-verdict
+
+🔐 Environment Variables
+
+Create a .env file in the root directory:
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/code_verdict?schema=public"
+
+# Authentication
+BETTER_AUTH_SECRET="your_secret_key"
+BETTER_AUTH_URL="http://localhost:3000"
+
+# GitHub OAuth
+GITHUB_CLIENT_ID="your_github_client_id"
+GITHUB_CLIENT_SECRET="your_github_client_secret"
+
+# AI (Google Gemini)
+GOOGLE_GENERATIVE_AI_API_KEY="your_google_api_key"
+
+# Pinecone
+PINECONE_API_KEY="your_pinecone_api_key"
+
+# Inngest
+INNGEST_EVENT_KEY="your_inngest_event_key"
+INNGEST_SIGNING_KEY="your_inngest_signing_key"
+
+# Payments
+POLAR_ACCESS_TOKEN="your_polar_access_token"
+🗄️ Database Setup
+npx prisma generate
+npx prisma migrate dev
+▶️ Run Development Server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit 👉 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+⚡ Run Inngest Dev Server
+npx inngest-cli@latest dev
+🧠 Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For a deeper understanding of system design and data flow, refer to:
 
-## Learn More
+ARCHITECTURE.md
+🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! 🚀
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Fork the repo
+# Create your branch
+git checkout -b feature/AmazingFeature
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Commit changes
+git commit -m "Add AmazingFeature"
 
-## Deploy on Vercel
+# Push
+git push origin feature/AmazingFeature
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Then open a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+📄 License
+
+This project is licensed under the MIT License.
+
+💡 Why Code Verdict?
+Solves real-world developer pain (code reviews)
+Uses LLM + RAG (advanced concept)
+Integrates multiple production tools (GitHub, payments, background jobs)
+Demonstrates full-stack + system design skills
+
+---
+
+If you want next level 🔥  
+I can make:
+- ⭐ Resume bullet (top-tier placement ready)
+- ⭐ GitHub description (short & catchy)
+- ⭐ Portfolio description (HR-friendly)
+
+Just tell me 👍
