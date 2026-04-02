@@ -1,20 +1,7 @@
-/**
- * 
- * 
- * This module contains serverless functions that handle:
- * - AI code review generation
- * - Repository indexing for RAG
- * - Webhook processing
- * 
- * All functions are executed asynchronously to avoid blocking the main application
- * and provide reliable processing with automatic retries.
- * 
- * @module inngest/functions
- */
 import { inngest } from "@/inngest/client";
 import {
-	getPullRequestDiff,
-	postReviewComment,
+  getPullRequestDiff,
+  postReviewComment,
 } from "@/modules/github/lib/github";
 import { retrieveContext } from "@/modules/ai/lib/rag";
 import prisma from "@/lib/db";
@@ -22,18 +9,37 @@ import prisma from "@/lib/db";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
-/**
- * Inngest function to generate an AI code review for a Pull Request.
- *
- * Triggered by: "pr.review.requested" event.
- *
- * Workflow:
- * 1. **fetch-pr-data**: Retrieves the PR diff, title, and description from GitHub.
- * 2. **retrieve-context**: Uses RAG to fetch relevant code snippets from the vector DB based on PR content.
- * 3. **generate-ai-review**: Sends the diff and context to Google Gemini to generate the review markdown.
- * 4. **post-comment**: Posts the generated review as a comment on the GitHub PR.
- * 5. **save-review**: Saves the review details to the database.
- */
+/* ------------------ HELPER FUNCTIONS ------------------ */
+
+// Extract file names from diff
+function extractFileNamesFromDiff(diff: string): string[] {
+  const matches = diff.match(/diff --git a\/(.*?) b\//g) || [];
+  return matches.map((m) =>
+    m.replace("diff --git a/", "").replace(" b/", "")
+  );
+}
+
+// Create small summary of diff (avoid token overload)
+function summarizeDiff(diff: string): string {
+  return diff
+    .split("\n")
+    .filter((line) => line.startsWith("+") || line.startsWith("-"))
+    .slice(0, 50)
+    .join("\n");
+}
+
+// Extract keywords for better semantic search
+function extractKeywords(text: string): string[] {
+  return text
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .toLowerCase()
+    .split(" ")
+    .filter((word) => word.length > 4)
+    .slice(0, 20);
+}
+
+/* ------------------ MAIN FUNCTION ------------------ */
+
 export const generateReview = inngest.createFunction(
   {
     id: "generate-review",
@@ -42,6 +48,8 @@ export const generateReview = inngest.createFunction(
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { owner, repo, prNumber, userId } = event.data;
+
+    /* -------- STEP 1: FETCH PR DATA -------- */
 
     const { diff, title, description, token } = await step.run(
       "fetch-pr-data",
@@ -71,16 +79,42 @@ export const generateReview = inngest.createFunction(
       }
     );
 
+    /* -------- STEP 2: BUILD OPTIMIZED QUERY -------- */
+
     const context = await step.run("retrieve-context", async () => {
-      const query = `${title}\n${description}`;
+      const files = extractFileNamesFromDiff(diff);
+      const diffSummary = summarizeDiff(diff);
+      const keywords = extractKeywords(
+        `${title} ${description} ${diffSummary}`
+      );
+
+      const query = `
+PR Title: ${title}
+PR Description: ${description || "No description"}
+
+Files Changed:
+${files.join(", ")}
+
+Summary of Changes:
+${diffSummary}
+
+Keywords:
+${keywords.join(", ")}
+      `;
+
       return await retrieveContext(query, `${owner}/${repo}`);
     });
+
+    /* -------- STEP 3: GENERATE AI REVIEW -------- */
 
     const review = await step.run("generate-ai-review", async () => {
       const prompt = `You are an expert code reviewer. Analyze the following pull request and provide a detailed, constructive code review.
 
 PR Title: ${title}
-PR Description: ${description || "No description provided"}
+PR Description: ${description || "No description"}
+
+Files Changed:
+${extractFileNamesFromDiff(diff).join(", ")}
 
 Context from Codebase:
 ${context.join("\n\n")}
@@ -107,6 +141,8 @@ Please provide:
       return text;
     });
 
+    /* -------- STEP 4: POST TO GITHUB -------- */
+
     await step.run("post-comment", async () => {
       await postReviewComment(
         token as string,
@@ -116,6 +152,8 @@ Please provide:
         review as string
       );
     });
+
+    /* -------- STEP 5: SAVE TO DATABASE -------- */
 
     await step.run("save-review", async () => {
       const repository = await prisma.repository.findFirst({
