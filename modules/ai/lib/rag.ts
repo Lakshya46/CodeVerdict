@@ -4,7 +4,7 @@ import { embed } from "ai";
 import { google } from "@ai-sdk/google";
 
 /**
- * Generates text embeddings using Google's text-embedding-004 model
+ * Generates text embeddings using Google's text-embedding-001 model
  * @param text - Text content to embed
  * @returns Promise resolving to embedding vector (768 dimensions)
  */
