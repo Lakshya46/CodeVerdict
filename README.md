@@ -51,19 +51,6 @@ By leveraging advanced LLMs and Retrieval-Augmented Generation (RAG), Code Verdi
 | **AI & Vector DB**  | Vercel AI SDK, Pinecone |
 | **Background Jobs** | Inngest |
 | **Payments**        | Polar.sh |
-| **State Management**| TanStack Query |
-
----
-
-## 📸 Screenshots  
-
-> Add your screenshots here  
-
-- Dashboard  
-- Repositories  
-- Reviews  
-- Settings  
-- Subscriptions  
 
 ---
 
@@ -78,7 +65,6 @@ By leveraging advanced LLMs and Retrieval-Augmented Generation (RAG), Code Verdi
 - Pinecone API Key  
 - Google Gemini API Key  
 
----
 
 ### ⚙️ Installation 
 npm install
@@ -155,18 +141,4 @@ Then open a Pull Request.
 
 This project is licensed under the MIT License.
 
-💡 Why Code Verdict?
-Solves real-world developer pain (code reviews)
-Uses LLM + RAG (advanced concept)
-Integrates multiple production tools (GitHub, payments, background jobs)
-Demonstrates full-stack + system design skills
 
----
-
-If you want next level 🔥  
-I can make:
-- ⭐ Resume bullet (top-tier placement ready)
-- ⭐ GitHub description (short & catchy)
-- ⭐ Portfolio description (HR-friendly)
-
-Just tell me 👍
